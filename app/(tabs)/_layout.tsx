@@ -1,35 +1,94 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { CustomDrawer } from '@/components/CustomDrawer';
+import { Ionicons } from '@expo/vector-icons'; 
+import { Drawer } from 'expo-router/drawer';
+import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
+export default function Layout() {
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
-    </Tabs>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Drawer 
+        drawerContent={(props) => <CustomDrawer {...props} />}
+        screenOptions={({ navigation }) => ({
+          headerShown: true,
+          headerTransparent: false, // Mantém o fundo sólido
+          headerStyle: {
+            backgroundColor: '#fff',
+            elevation: 0, 
+            shadowOpacity: 0,
+            // REMOVEMOS o 'height: 100' para o header não ocupar espaço excessivo
+          },
+          // Ajusta o alinhamento vertical dos itens do header
+          headerTitleAlign: 'left', 
+          headerTitleContainerStyle: {
+            marginLeft: -10, // Aproxima o título do ícone de menu
+          },
+          headerTitle: ({ children }) => (
+            <View style={styles.titleContainer}>
+              <Text style={styles.titleText}>{children}</Text>
+              <View style={styles.underline} />
+            </View>
+          ),
+          headerLeft: () => (
+            <TouchableOpacity 
+              onPress={() => navigation.openDrawer()}
+              style={{ marginLeft: 20 }}
+            >
+              <Ionicons name="menu-outline" size={35} color="black" />
+            </TouchableOpacity>
+          ),
+        })} 
+      >
+        <Drawer.Screen 
+          name="index" 
+          options={{ 
+            drawerLabel: "Início",    
+            headerTitle: "Início", 
+          }} 
+        />
+
+        <Drawer.Screen 
+          name="anotacao" 
+          options={{ 
+            drawerLabel: "Anotação", 
+            headerTitle: "Anotações",
+          }} 
+        />
+
+        <Drawer.Screen 
+          name="perfil" 
+          options={{ 
+            drawerLabel: "Meu Perfil",
+            headerTitle: "Perfil",
+          }} 
+        />
+
+        <Drawer.Screen 
+          name="configuracoes" 
+          options={{ 
+            drawerLabel: "Configurações",
+            headerTitle: "Configurações",
+          }} 
+        />
+      </Drawer>
+    </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  titleContainer: {
+    alignItems: 'flex-start',
+    paddingBottom: 5, // Pequeno ajuste para a linha não colar no fundo do header
+  },
+  titleText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'black',
+  },
+  underline: {
+    width: '100%',
+    height: 2,
+    backgroundColor: 'black',
+    marginTop: 2,
+  },
+});
